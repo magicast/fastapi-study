@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import Annotated
+
 
 app = FastAPI()
 
@@ -7,7 +9,7 @@ app = FastAPI()
 class Item(BaseModel):
     name: str
     price: float
-    is_offer: bool | None = None
+    is_offer: Annotated[bool | None, "is_offer parameter"] = None
 
 
 @app.get("/")
