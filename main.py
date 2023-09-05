@@ -1,19 +1,25 @@
 """study fastapi"""
 
 from typing import Annotated
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from fastapi import FastAPI, Query, Path
 
 
 app = FastAPI()
 
 
-class Item(BaseModel):
-    """item class"""
+class Image(BaseModel):
+    url: HttpUrl
     name: str
-    price: float
-    is_offer: Annotated[bool | None, "is_offer parameter"] = None
 
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+    tags: set[str] = set()
+    images: list[Image] | None = None
 
 @app.get("/")
 def read_root():
