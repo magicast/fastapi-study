@@ -1,20 +1,32 @@
 """study fastapi"""
 
 from typing import Annotated
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 from fastapi import FastAPI, Query, Path, Body
 
 
 app = FastAPI()
 
 
-class Item(BaseModel):
-    """item class"""
+class Image(BaseModel):
+    """image class"""
+    url: HttpUrl
     name: str
     price: Annotated[float, Field(gt=0, description='the price must be greater than 0')]
     description: Annotated[str | None,
                            Field(title='the description of the item', max_length=300)] = None
     tax: float | None = None
+
+
+class Item(BaseModel):
+    "item class"
+    name: str
+    price: Annotated[float, Field(gt=0, description='the price must be greater than 0')]
+    description: Annotated[str | None,
+                           Field(title='the description of the item', max_length=300)] = None
+    tax: float | None = None
+    tags: set[str] = set()
+    images: list[Image] | None = None
 
 
 @app.get("/")
