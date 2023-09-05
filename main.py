@@ -1,8 +1,8 @@
 """study fastapi"""
 
 from typing import Annotated
-from pydantic import BaseModel
-from fastapi import FastAPI, Query, Path
+from pydantic import BaseModel, Field
+from fastapi import FastAPI, Query, Path, Body
 
 
 app = FastAPI()
@@ -11,8 +11,10 @@ app = FastAPI()
 class Item(BaseModel):
     """item class"""
     name: str
-    price: float
-    is_offer: Annotated[bool | None, "is_offer parameter"] = None
+    price: Annotated[float, Field(gt=0, description='the price must be greater than 0')]
+    description: Annotated[str | None,
+                           Field(title='the description of the item', max_length=300)] = None
+    tax: float | None = None
 
 
 @app.get("/")
@@ -39,10 +41,10 @@ async def read_item(
     return item
 
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
+async def update_item(item_id: int, item: Annotated[Item, Body(embed=True)]):
     """update item page"""
-    return {"item_name": item.name, "item_id": item_id}
-
+    results = {"item_id": item_id, "item": item}
+    return results
 
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
